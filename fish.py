@@ -27,11 +27,17 @@ def fish(img, distortion_coefficient):
     :return: numpy.ndarray - the image with applied effect.
     """
 
+    # If input image is only RGB convert it to RGBA
+    # So that output 'frame' can be transparent.
+    w, h, channels = img.shape[0], img.shape[1], img.shape[2]
+    if channels == 3:
+        img = np.dstack((img, np.full((w, h), 255)))
+
     # prepare array for dst image
     dstimg = np.zeros_like(img)
 
     # floats for calcultions
-    w, h = float(img.shape[0]), float(img.shape[1])
+    w, h = float(w), float(h)
 
     # easier calcultion if we traverse x, y in dst image
     for x in range(len(dstimg)):
@@ -39,7 +45,7 @@ def fish(img, distortion_coefficient):
 
             # normalize x and y to be in interval of [-1, 1]
             xnd, ynd = float((2*x - w)/w), float((2*y - h)/h)
-            # print(x, y, xnd, ynd)
+
             # get xn and yn distance from normalized center
             rd = sqrt(xnd**2 + ynd**2)
 
@@ -53,7 +59,8 @@ def fish(img, distortion_coefficient):
             if 0 <= xu and xu < img.shape[0] and 0 <= yu and yu < img.shape[1]:
                 dstimg[x][y] = img[xu][yu]
 
-    return dstimg
+
+    return dstimg.astype(np.uint8)
 
 
 def parse_args(args=sys.argv[1:]):
