@@ -27,10 +27,17 @@ def fish(img, distortion_coefficient):
     :return: numpy.ndarray - the image with applied effect.
     """
 
-    # If input image is only RGB convert it to RGBA
+    # If input image is only BW or RGB convert it to RGBA
     # So that output 'frame' can be transparent.
-    w, h, channels = img.shape[0], img.shape[1], img.shape[2]
-    if channels == 3:
+    w, h = img.shape[0], img.shape[1]
+    if len(img.shape) == 2:
+        # Duplicate the one BW channel twice to create Black and White
+        # RGB image (For each pixel, the 3 channels have the same value)
+        bw_channel = np.copy(img)
+        img = np.dstack((img, bw_channel))
+        img = np.dstack((img, bw_channel))
+    if len(img.shape) == 3 and img.shape[2] == 3:
+        print("RGB to RGBA")
         img = np.dstack((img, np.full((w, h), 255)))
 
     # prepare array for dst image
@@ -58,7 +65,6 @@ def fish(img, distortion_coefficient):
             # if new pixel is in bounds copy from source pixel to destination pixel
             if 0 <= xu and xu < img.shape[0] and 0 <= yu and yu < img.shape[1]:
                 dstimg[x][y] = img[xu][yu]
-
 
     return dstimg.astype(np.uint8)
 
@@ -104,5 +110,6 @@ if __name__ == "__main__":
         if ans.lower() != 'y':
             print("exiting")
             sys.exit(0)
+    
     output_img = fish(imgobj, args.distortion)
     imageio.imwrite(args.outpath, output_img, format='png')
