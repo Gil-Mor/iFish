@@ -22,7 +22,6 @@ You can also apply "reverse-fish" (rectilinear lens) by specifying negative dist
 For usage: `python3 fish.py -h`
 
 ### Dependencies
-[numpy](https://numpy.org/) and [imageio](https://pypi.org/project/imageio)
 ```bash
-pip3 install numpy imageio
+pip3 install -r requirements.txt
 ```
