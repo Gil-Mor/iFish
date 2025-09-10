@@ -82,7 +82,7 @@ def parse_args(args=sys.argv[1:]):
 
     parser.add_argument("-o", "--outpath", help="file path to write output to."
                         " format: <path>.<format(jpg,png,etc..)>",
-                        type=str, default="fish.png")
+                        type=str, required=False)
 
     parser.add_argument("-d", "--distortion",
                         help="The distoration coefficient. How much the move pixels from/to the center."
@@ -104,6 +104,9 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
         sys.exit(1)
+    if not args.outpath:
+        args.outpath = os.path.splitext(args.image)
+        args.outpath = args.outpath[0] + "_fish.png"
     if os.path.exists(args.outpath):
         ans = input(
             args.outpath + " exists. File will be overridden. Continue? y/n: ")
