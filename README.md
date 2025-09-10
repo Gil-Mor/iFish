@@ -6,7 +6,7 @@
 ![Mona Lisa](Mona_Lisa.jpg)
 
 #### After
-![fish.png](fish.png)  
+![fish.png](Mona_Lisa_fish.png)  
 
 OR
 
@@ -14,7 +14,7 @@ OR
 ![grid](grid.jpg)
 
 #### After
-![grid.png](grid.png)  
+![grid.png](grid_fish.png)  
 
 You can control the amount of distortion.
 You can also apply "reverse-fish" (rectilinear lens) by specifying negative distortion.
