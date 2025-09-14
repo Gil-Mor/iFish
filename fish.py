@@ -33,13 +33,15 @@ def fish(img, distortion_coefficient):
     if len(img.shape) == 2:
         # Duplicate the one BW channel twice to create Black and White
         # RGB image (For each pixel, the 3 channels have the same value)
+        print("Converting B&W photo to RGB")
         bw_channel = np.copy(img)
         img = np.dstack((img, bw_channel))
         img = np.dstack((img, bw_channel))
     if len(img.shape) == 3 and img.shape[2] == 3:
-        print("RGB to RGBA")
+        print("Converting RGB photo to RGBA")
         img = np.dstack((img, np.full((w, h), 255)))
 
+    print("Applying Fish-Eye. Calculating... This may take some time.")
     # prepare array for dst image
     dstimg = np.zeros_like(img)
 
