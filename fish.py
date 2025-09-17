@@ -4,6 +4,19 @@ from math import sqrt
 import sys
 import argparse
 import os
+import PIL
+import cv2
+
+
+def resize_image(imgobj, max_width_or_height: int = 1200):
+    h, w = imgobj.shape[:2]
+    
+    if w > max_width_or_height or h > max_width_or_height:
+        factor = max(w / max_width_or_height, h / max_width_or_height)
+        new_w = int(w / factor)
+        new_h = int(h / factor)
+        imgobj = cv2.resize(imgobj, (new_w, new_h))
+    return imgobj
 
 
 def get_fish_xn_yn(source_x, source_y, radius, distortion):
@@ -87,7 +100,7 @@ def parse_args(args=sys.argv[1:]):
                         type=str, required=False)
 
     parser.add_argument("-d", "--distortion",
-                        help="The distoration coefficient. How much the move pixels from/to the center."
+                        help="The distortion coefficient. How much the move pixels from/to the center."
                         " Recommended values are between -1 and 1."
                         " The bigger the distortion, the further pixels will be moved outwars from the center (fisheye)."
                         " The Smaller the distortion, the closer pixels will be move inwards toward the center (rectilinear)."
@@ -103,6 +116,7 @@ if __name__ == "__main__":
     args = parse_args()
     try:
         imgobj = imageio.imread(args.image)
+        imgobj = resize_image(imgobj)
     except Exception as e:
         print(e)
         sys.exit(1)

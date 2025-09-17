@@ -1,2 +1,4 @@
 numpy
 imageio
+streamlit
+opencv-python
