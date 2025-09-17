@@ -17,7 +17,7 @@ if uploaded_file is not None:
 
 
     distortion = st.slider(
-        "The distortion coefficient. How much the move pixels from/to the center.",
+        "The distortion coefficient. How much to move pixels from/to the center.",
         min_value=-1.0,
         max_value=1.0,
         value=0.5, # default
