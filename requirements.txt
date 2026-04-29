@@ -1,4 +1,4 @@
 numpy
 imageio
 streamlit
-opencv-python
+opencv-python-headless
