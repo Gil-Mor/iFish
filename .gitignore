@@ -1,0 +1,26 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (CRITICAL)
+venv/
+env/
+.venv/
+
+# VS Code specific settings
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Streamlit local secrets and configuration
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Environment variables
+.env
+
+# Temp output
+tmp.png
