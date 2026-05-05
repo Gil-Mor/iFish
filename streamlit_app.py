@@ -9,7 +9,7 @@ st.set_page_config(page_title="iFish - Fish-Eye Filter", layout="centered")
 st.title("iFish - Fish-Eye Filter")
 st.write("Upload an image.")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"], )
+uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
 
 
 if uploaded_file is not None:
