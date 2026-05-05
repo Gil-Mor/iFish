@@ -51,6 +51,8 @@ def fish(img: np.ndarray, distortion_coefficient: float) -> np.ndarray:
     """
     Apply Fish-Eye (or reverse fish-eye) effect to an image
     based on the given distortion_coefficient.
+    This is a naive implementation that moves pixel by pixel.
+    It uses a 'backward mapping' - for each pixel in the destination image - a pixel from the source image is calculated and moved to its new location. A backward mapping is used to ensure that every pixel in the destination image is filled.
     :type img: numpy.ndarray
     :param distortion_coefficient: The amount of distortion to apply.
     :return: numpy.ndarray - the image with applied effect.
