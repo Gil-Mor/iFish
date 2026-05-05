@@ -39,10 +39,10 @@ if uploaded_file is not None:
 
     img_slot.image(img, caption="Uploaded Image", use_container_width=True)
     try:
-        processed_img = fish.fish(img, distortion_coefficient=distortion)
+        processed_img = fish.fish(img, distortion=distortion)
     except Exception as e:
         status_slot.status(f"Error applying effect. {e}", expanded=True, state='error')
         raise e
-    
+
     status_slot.status("Result", expanded=True, state='complete')
     img_slot.image(processed_img, caption="Fish Eyed Image")

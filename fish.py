@@ -47,14 +47,42 @@ def get_fish_xn_yn(source_x_norm: float, source_y_norm: float, distortion: float
     return source_x_norm / denom, source_y_norm / denom
 
 
-def fish(img: np.ndarray, distortion_coefficient: float) -> np.ndarray:
+def get_scale(distortion: float) -> float:
+    scale = 1.0
+    if distortion > 0:
+        # For positive distortion where pixels move away from the center, the outer pixels
+        # in the input image will land outside the destination image bounds.
+        # This will create a smaller visible output surrounded by transparent margins where
+        # no source pixels could be used.
+        # To fix this we will calculate which source pixel will land on the destination edge.
+        # The corners will still have transparent margins because fish-eye makes the output round,
+        # but the middle pixels in the input edges will land on the output edges.
+        # I.e. The normalized pixels (0,1), (1,0), (0,-1), (-1,0) from the input will
+        # land on the same coordinates in the output.
+        # Solve for (1, 0):
+        # Source_x = Dest_x / (1 - d*r^2)
+        # d = distortion, r = radius
+        # Since the point is on the X axis r^2 = Dest_x^2 (Dest_y = 0)
+        # Source_x = Dest_x / (1 - d*Dest_x^2)
+        # Source_x = 1
+        # 1 = Dest_x / (1 - d*Dest_x^2)
+        # 1 - (d * Dest_x^2) = Dest_x
+        # d*Dest_x^2 - Dest_x - 1 = 0
+        # Solve for Dest_x with Quadratic formula
+        # Dest_x = (-1 + sqrt(1 + 4d)) / 2d
+        # Since we are working with normalized coordinates [-1, 1] for both X and Y axis
+        # The calculation also works for Y coordinates.
+        return (-1.0 + sqrt(1.0 + 4.0 * distortion)) / (2.0 * distortion)
+
+
+def fish(img: np.ndarray, distortion: float) -> np.ndarray:
     """
     Apply Fish-Eye (or reverse fish-eye) effect to an image
-    based on the given distortion_coefficient.
+    based on the given distortion.
     This is a naive implementation that moves pixel by pixel.
     It uses a 'backward mapping' - for each pixel in the destination image - a pixel from the source image is calculated and moved to its new location. A backward mapping is used to ensure that every pixel in the destination image is filled.
     :type img: numpy.ndarray
-    :param distortion_coefficient: The amount of distortion to apply.
+    :param distortion: The amount of distortion to apply.
     :return: numpy.ndarray - the image with applied effect.
     """
 
@@ -74,6 +102,8 @@ def fish(img: np.ndarray, distortion_coefficient: float) -> np.ndarray:
     # prepare array for dst image
     dstimg = np.zeros_like(img)
 
+    scale = get_scale(distortion)
+
     # Traverse over pixels
     for row_idx in range(height):
         for col_idx in range(width):
@@ -82,9 +112,12 @@ def fish(img: np.ndarray, distortion_coefficient: float) -> np.ndarray:
             x_norm = (2.0 * col_idx - width) / width
             y_norm = (2.0 * row_idx - height) / height
 
+            x_norm *= scale
+            y_norm *= scale
+
             # new normalized pixel coordinates
             x_distorted_norm, y_distorted_norm = get_fish_xn_yn(
-                x_norm, y_norm, distortion_coefficient)
+                x_norm, y_norm, distortion)
 
             # convert the normalized distorted xdn and ydn back to image pixels
             source_col = int(((x_distorted_norm + 1.0) * width) / 2.0)
