@@ -72,8 +72,9 @@ def get_scale(distortion: float) -> float:
         # Dest_x = (-1 + sqrt(1 + 4d)) / 2d
         # Since we are working with normalized coordinates [-1, 1] for both X and Y axis
         # The calculation also works for Y coordinates.
-        return (-1.0 + sqrt(1.0 + 4.0 * distortion)) / (2.0 * distortion)
+        scale = (-1.0 + sqrt(1.0 + 4.0 * distortion)) / (2.0 * distortion)
 
+    return scale
 
 def fish(img: np.ndarray, distortion: float) -> np.ndarray:
     """
