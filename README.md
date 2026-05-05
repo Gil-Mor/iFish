@@ -1,27 +1,36 @@
-# iFish  
+# iFish
 
-### Apply Fish Eye effect to your photos 
+### Apply Fish Eye effect to your photos
+
+A naive implementation that moves pixels from/to the center based on a 'distortion' value.
 
 #### Before
-![Mona Lisa](Mona_Lisa.jpg)
+<img src="Mona_Lisa.jpg" alt="Mona Lisa" width="300px"/>
 
 #### After
-![fish.png](Mona_Lisa_fish.png)  
+<img src="Mona_Lisa_fish.png" alt="Mona Lisa after Fish-eye effect" width="300px"/>
 
 OR
 
 #### Before
-![grid](grid.jpg)
+<img src="grid.jpg" alt="grid pattern" width="300px"/>
 
 #### After
-![grid.png](grid_fish.png)  
+<img src="grid_fish.png" alt="grid pattern after fish-eye effect" width="300px"/>
 
 You can control the amount of distortion.
 You can also apply "reverse-fish" (rectilinear lens) by specifying negative distortion.
 
-For usage: `python3 fish.py -h`
+### Usage:
+
+#### Cmdline:
+`python fish.py -h`
+
+#### Local Web Interface with [streamlit](https://streamlit.io/)
+`streamlit run streamlit_app.py`
+
 
 ### Dependencies
 ```bash
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
