@@ -1,6 +1,8 @@
 import streamlit as st
 import imageio
 import fish
+import io
+import os
 
 st.set_page_config(page_title="iFish - Fish-Eye Filter", layout="centered")
 
@@ -44,5 +46,19 @@ if uploaded_file is not None:
         status_slot.status(f"Error applying effect. {e}", expanded=True, state='error')
         raise e
 
-    status_slot.status("Result", expanded=True, state='complete')
+    status_slot.status("Result", expanded=False, state='complete')
     img_slot.image(processed_img, caption="Fish Eyed Image")
+    # Prepare the download button
+    base_name = os.path.splitext(uploaded_file.name)[0]
+    default_out_name = f"{base_name}_fish.png"
+
+    # Convert the processed numpy array to bytes for download
+    buf = io.BytesIO()
+    imageio.imwrite(buf, processed_img, format='png')
+    st.download_button(
+        label="Save Image",
+        data=buf.getvalue(),
+        file_name=default_out_name,
+        mime="image/png"
+    )
+
