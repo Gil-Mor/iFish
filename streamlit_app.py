@@ -9,13 +9,21 @@ st.set_page_config(page_title="iFish - Fish-Eye Filter", layout="centered")
 st.title("iFish - Fish-Eye Filter")
 st.write("Upload an image.")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
+uploaded_file = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
 
+if st.button("Use Mona Lisa (Default Example)"):
+    st.session_state.img_source = "Mona_Lisa.jpg"
+    st.session_state.img_name = "Mona_Lisa.jpg"
+    uploaded_file = None
 
-if uploaded_file is not None:
+# Determine the active image: file_uploader takes precedence, then session_state
+img_source = uploaded_file if uploaded_file else st.session_state.get('img_source')
+img_name = uploaded_file.name if uploaded_file else st.session_state.get('img_name')
+
+if img_source is not None:
     status_slot = st.empty()
     try:
-        img = imageio.imread(uploaded_file)
+        img = imageio.imread(img_source)
     except Exception as e:
         status_slot.status(f"Error reading image. {e}", expanded=True, state='error')
         raise e
@@ -27,12 +35,12 @@ if uploaded_file is not None:
 
 
     distortion = st.slider(
-        label="The distortion coefficient. How much to move pixels from/to the center.",
+        label="Effect strength - Distortion amount. How much to move pixels from/to the center.",
         help="Positive values create a Fish Eye effect.\n"
         "Negative values create a Rectilinear effect.",
         min_value=-1.0,
         max_value=1.0,
-        value=0.5, # default
+        value=0.0, # default
         step=0.1
     )
 
@@ -40,6 +48,11 @@ if uploaded_file is not None:
     status_slot.status(f"Processing image with distortion {distortion}...", expanded=True, state='running')
 
     img_slot.image(img, caption="Uploaded Image", use_container_width=True)
+    if distortion == 0:
+        status_slot.status("Set Distortion different from 0.", expanded=True)
+        status_slot.status("Set Distortion different from 0.", expanded=False, state='complete')
+        st.stop()
+
     try:
         processed_img = fish.fish(img, distortion=distortion)
     except Exception as e:
@@ -49,7 +62,7 @@ if uploaded_file is not None:
     status_slot.status("Result", expanded=False, state='complete')
     img_slot.image(processed_img, caption="Fish Eyed Image")
     # Prepare the download button
-    base_name = os.path.splitext(uploaded_file.name)[0]
+    base_name = os.path.splitext(img_name)[0]
     default_out_name = f"{base_name}_fish.png"
 
     # Convert the processed numpy array to bytes for download
@@ -61,4 +74,3 @@ if uploaded_file is not None:
         file_name=default_out_name,
         mime="image/png"
     )
-

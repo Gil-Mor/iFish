@@ -161,6 +161,9 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     args = parse_args()
+    if args.distoration == 0:
+        print("Set Distortion different from 0.")
+        sys.exit(0)
     try:
         imgobj = imageio.imread(args.image)
         imgobj = resize_image(imgobj)
