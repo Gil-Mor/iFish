@@ -62,8 +62,8 @@ if img_source is not None:
         status_slot.status(f"Error applying effect. {e}", expanded=True, state='error')
         raise e
 
-    status_slot.status("Result", expanded=False, state='complete')
     img_slot.image(processed_img, caption="Fish Eyed Image")
+    status_slot.status("Result", expanded=False, state='complete')
     # Prepare the download button
     base_name = os.path.splitext(img_name)[0]
     default_out_name = f"{base_name}_fish.png"
