@@ -37,15 +37,23 @@ if img_source is not None:
         status_slot.status(f"Error resizing image. {e}", expanded=True, state='error')
         raise e
 
+    mode = st.radio("Distortion range mode",
+        options=["Normal Mode 😌", "Wacky Mode 🤯"])
+    if mode == "Wacky Mode 🤯":
+        distortion_range = (-100.0, 100.0)
+        distortion_step = 1.0
+    else:
+        distortion_range = (-1.0, 1.0)
+        distortion_step = 0.1
 
     distortion = st.slider(
         label="Effect strength - Distortion amount. How much to move pixels from/to the center.",
         help="Positive values create a Fish Eye effect.\n"
         "Negative values create a Rectilinear effect.",
-        min_value=-1.0,
-        max_value=1.0,
-        value=0.0, # default
-        step=0.1
+        min_value=distortion_range[0],
+        max_value=distortion_range[1],
+        value=0.0,
+        step=distortion_step
     )
 
     img_slot = st.empty()
