@@ -7,7 +7,10 @@ import os
 st.set_page_config(page_title="iFish - Fish-Eye Filter", layout="centered")
 
 st.title("iFish - Fish-Eye Filter")
-st.write("Upload an image.")
+st.write("A naive implementation of Fish-Eye filter.")
+st.write("Slide the slider to change the effect strength. Positive values for Fish-eye effect, negative for reverse effect (Rectilinear).")
+st.write("Project Github page: https://github.com/Gil-Mor/iFish")
+st.write("Upload an image or use the default example (Mona Lisa).")
 
 uploaded_file = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
 
