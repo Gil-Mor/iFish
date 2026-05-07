@@ -20,7 +20,6 @@ if st.button("Use Mona Lisa (Default Example)", icon="🖼️"):
     st.session_state.img_name = "Mona_Lisa.jpg"
     uploaded_file = None
 
-
 # Determine the active image: file_uploader takes precedence, then session_state
 img_source = uploaded_file if uploaded_file else st.session_state.get('img_source')
 img_name = uploaded_file.name if uploaded_file else st.session_state.get('img_name')
@@ -31,12 +30,13 @@ if img_source is not None:
         img = imageio.imread(img_source)
     except Exception as e:
         status_slot.status(f"Error reading image. {e}", expanded=True, state='error')
-        raise e
+        st.stop()
+
     try:
         img = fish.resize_image(img)
     except Exception as e:
         status_slot.status(f"Error resizing image. {e}", expanded=True, state='error')
-        raise e
+        st.stop()
 
     mode_radio_container = st.container(border=True)
     mode = mode_radio_container.radio("Distortion range mode",
@@ -62,32 +62,41 @@ if img_source is not None:
     )
 
     img_slot = st.empty()
-    status_slot.status(f"Processing image with distortion {distortion}...", state='running')
-
     img_slot.image(img, caption="Uploaded Image", use_container_width=True)
+
     if distortion == 0:
         status_slot.status("Set Distortion different from 0. Waiting...", state="running")
         st.stop()
 
-    try:
-        processed_img = fish.fish(img, distortion=distortion)
-    except Exception as e:
-        status_slot.status(f"Error applying effect. {e}", expanded=True, state='error')
-        raise e
+    # Use a context manager so the status remains "running" until the block finishes
+    with status_slot.status(f"Processing image with distortion {distortion}...", state='running') as status:
+        try:
+            # 1. Apply the effect
+            processed_img = fish.fish(img, distortion=distortion)
 
-    img_slot.image(processed_img, caption="Fish Eyed Image")
-    status_slot.status(f"Processed image with distortion {distortion}.", state='complete')
+            # 2. Encode the image to bytes inside the 'running' status.
+            buf = io.BytesIO()
+            imageio.imwrite(buf, processed_img, format='png')
+            img_bytes = buf.getvalue()
+
+            # 3. Render the pre-encoded image (much faster than passing the raw NumPy array)
+            img_slot.image(img_bytes, caption="Fish Eyed Image")
+
+            # 4. Safely transition to complete
+            status.update(label=f"Processed image with distortion {distortion}.", state='complete')
+
+        except Exception as e:
+            status.update(label=f"Error applying effect. {e}", expanded=True, state='error')
+            st.stop()
 
     # Prepare the download button
     base_name = os.path.splitext(img_name)[0]
     default_out_name = f"{base_name}_fish.png"
 
-    # Convert the processed numpy array to bytes for download
-    buf = io.BytesIO()
-    imageio.imwrite(buf, processed_img, format='png')
+    # Pass the already-encoded bytes directly to the download button
     st.download_button(
         label="Save Image",
-        data=buf.getvalue(),
+        data=img_bytes,
         file_name=default_out_name,
         mime="image/png"
     )
