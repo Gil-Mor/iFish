@@ -14,10 +14,11 @@ st.write("Upload an image or use the default example (Mona Lisa).")
 
 uploaded_file = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
 
-if st.button("Use Mona Lisa (Default Example)"):
+if st.button("Use Mona Lisa (Default Example)", icon="🖼️"):
     st.session_state.img_source = "Mona_Lisa.jpg"
     st.session_state.img_name = "Mona_Lisa.jpg"
     uploaded_file = None
+
 
 # Determine the active image: file_uploader takes precedence, then session_state
 img_source = uploaded_file if uploaded_file else st.session_state.get('img_source')
@@ -52,7 +53,6 @@ if img_source is not None:
 
     img_slot.image(img, caption="Uploaded Image", use_container_width=True)
     if distortion == 0:
-        status_slot.status("Set Distortion different from 0.", expanded=True)
         status_slot.status("Set Distortion different from 0.", expanded=False, state='complete')
         st.stop()
 
