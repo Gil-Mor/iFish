@@ -7,12 +7,13 @@ import os
 st.set_page_config(page_title="iFish - Fish-Eye Filter", layout="centered")
 
 st.title("iFish - Fish-Eye Filter")
-st.write("A naive implementation of Fish-Eye filter.")
-st.write("Slide the slider to change the effect strength. Positive values for Fish-eye effect, negative for reverse effect (Rectilinear).")
-st.write("Project Github page: https://github.com/Gil-Mor/iFish")
-st.write("Upload an image or use the default example (Mona Lisa).")
+doc_container = st.container(border=True)
 
-uploaded_file = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"], max_upload_size=5)
+doc_container.write("A naive implementation of Fish-Eye filter.")
+doc_container.write("Slide the slider to change the effect strength. Positive values for Fish-eye effect, negative for reverse effect (Rectilinear).")
+doc_container.write("Project Github page: https://github.com/Gil-Mor/iFish")
+
+uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg"], max_upload_size=5)
 
 if st.button("Use Mona Lisa (Default Example)", icon="🖼️"):
     st.session_state.img_source = "Mona_Lisa.jpg"
@@ -37,19 +38,23 @@ if img_source is not None:
         status_slot.status(f"Error resizing image. {e}", expanded=True, state='error')
         raise e
 
-    mode = st.radio("Distortion range mode",
-        options=["Normal Mode 😌", "Wacky Mode 🤯"])
+    mode_radio_container = st.container(border=True)
+    mode = mode_radio_container.radio("Distortion range mode",
+        options=["Normal Mode 😌", "Wacky Mode 🤯"], horizontal=True)
+
     if mode == "Wacky Mode 🤯":
-        distortion_range = (-100.0, 100.0)
-        distortion_step = 1.0
+        distortion_range = (-15.0, 100.0)
+        distortion_step = 0.5
+        distortion_slider_help = "Positive values make sense even up to 100. Negative values hardly make sense below -15."
     else:
         distortion_range = (-1.0, 1.0)
         distortion_step = 0.1
+        distortion_slider_help = "Positive values create a Fish Eye effect. Negative values create a Rectilinear effect."
 
-    distortion = st.slider(
+    distortion_slider_container = st.container(border=True)
+    distortion = distortion_slider_container.slider(
         label="Effect strength - Distortion amount. How much to move pixels from/to the center.",
-        help="Positive values create a Fish Eye effect.\n"
-        "Negative values create a Rectilinear effect.",
+        help=distortion_slider_help,
         min_value=distortion_range[0],
         max_value=distortion_range[1],
         value=0.0,
@@ -57,11 +62,11 @@ if img_source is not None:
     )
 
     img_slot = st.empty()
-    status_slot.status(f"Processing image with distortion {distortion}...", expanded=True, state='running')
+    status_slot.status(f"Processing image with distortion {distortion}...", state='running')
 
     img_slot.image(img, caption="Uploaded Image", use_container_width=True)
     if distortion == 0:
-        status_slot.status("Set Distortion different from 0.", expanded=False, state='complete')
+        status_slot.status("Set Distortion different from 0. Waiting...", state="running")
         st.stop()
 
     try:
@@ -71,7 +76,8 @@ if img_source is not None:
         raise e
 
     img_slot.image(processed_img, caption="Fish Eyed Image")
-    status_slot.status("Result", expanded=False, state='complete')
+    status_slot.status(f"Processed image with distortion {distortion}.", state='complete')
+
     # Prepare the download button
     base_name = os.path.splitext(img_name)[0]
     default_out_name = f"{base_name}_fish.png"
